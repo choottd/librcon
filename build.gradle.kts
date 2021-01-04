@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.4.21"
+    id("maven-publish")
 }
 
 group = "org.org.choottd"
@@ -30,6 +31,19 @@ kotlin {
                 implementation(kotlin("test-junit5"))
                 implementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
                 runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
+            }
+        }
+
+        publishing {
+            repositories {
+                maven {
+                    name = "GitHubPackages"
+                    url = uri("https://maven.pkg.github.com/choottd/librcon")
+                    credentials {
+                        username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                        password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                    }
+                }
             }
         }
     }
