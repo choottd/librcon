@@ -20,7 +20,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "org.org.choottd"
+group = "org.choottd"
 version = "0.1.0-SNAPSHOT"
 
 repositories {
