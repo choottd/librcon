@@ -15,24 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.choottd.librcon.session.event
+package org.choottd.librcon.session.event.data
 
 import org.choottd.librcon.gamestate.GameDate
-import org.choottd.librcon.gamestate.MapState
+import org.choottd.librcon.gamestate.PastEconomyState
+import java.math.BigInteger
 
-data class MapData(
-    val name: String,
-    val landscape: MapState.Landscape,
-    val dateStart: GameDate,
-    val seed: Long,
-    val height: Int,
-    val width: Int
+data class PastEconomyData(
+    val date: GameDate,
+    val value: BigInteger,
+    val cargo: Int,
+    val performance: Int
 ) {
 
     companion object {
-        fun from(state: MapState) = MapData(
-            state.name, state.landscape, state.dateStart,
-            state.seed, state.height, state.width
-        )
+        fun from(state: PastEconomyState) = PastEconomyData(state.date, state.value, state.cargo, state.performance)
     }
 }

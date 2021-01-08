@@ -36,6 +36,7 @@ import org.choottd.librcon.session.event.ChatEvent
 import org.choottd.librcon.session.event.SessionEvent
 import kotlin.coroutines.CoroutineContext
 
+@Suppress("unused")
 class Session(
     private val botName: String,
     private val botVersion: String,
@@ -236,7 +237,7 @@ class Session(
         connection.writePacket(packet)
     }
 
-    fun sendAdminPoll(type: ServerProtocol.AdminUpdateType, data: Long = 0) = launch {
+    private fun sendAdminPoll(type: ServerProtocol.AdminUpdateType, data: Long = 0) = launch {
         if (globalState.protocol?.isSupported(type, ServerProtocol.AdminUpdateFrequency.POLL) != true) {
             logger.error("The server does not support POLL for $type")
             throw InvalidPollingException("The server does not support POLL for $type")

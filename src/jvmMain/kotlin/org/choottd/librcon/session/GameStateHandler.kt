@@ -23,7 +23,7 @@ import org.choottd.librcon.gamestate.MapState
 import org.choottd.librcon.packet.data.GameStatePacketData
 import org.choottd.librcon.packet.data.ServerDate
 import org.choottd.librcon.packet.data.ServerWelcome
-import org.choottd.librcon.session.event.GameData
+import org.choottd.librcon.session.event.data.GameData
 import org.choottd.librcon.session.event.GameDateEvent
 import org.choottd.librcon.session.event.GameUpdateEvent
 

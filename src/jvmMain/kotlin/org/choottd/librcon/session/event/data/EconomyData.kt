@@ -15,15 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.choottd.librcon.session.event
+package org.choottd.librcon.session.event.data
 
-data class ServerCmdData(
-    val client: ClientData,
-    val company: CompanyData,
-    val command: CommandData,
-    val p1: Long,
-    val p2: Long,
-    val title: Long,
-    val text: String,
-    val frame: Long
-)
+import org.choottd.librcon.gamestate.EconomyState
+import org.choottd.librcon.gamestate.GameDate
+import java.math.BigInteger
+
+data class EconomyData(
+    val date: GameDate,
+    val money: BigInteger,
+    val loan: BigInteger,
+    val income: BigInteger
+) {
+
+    companion object {
+        fun from(state: EconomyState) = EconomyData(state.date, state.money, state.loan,state.income)
+    }
+}

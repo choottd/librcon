@@ -15,17 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.choottd.librcon.session.event
+package org.choottd.librcon.session.event.data
 
-import org.choottd.librcon.gamestate.ProtocolState
-import org.choottd.librcon.packet.data.ServerProtocol
+import org.choottd.librcon.gamestate.GameDate
+import org.choottd.librcon.gamestate.MapState
 
-data class ProtocolData(
-    val version: Int,
-    val supportedFrequencies: Map<ServerProtocol.AdminUpdateType, Set<ServerProtocol.AdminUpdateFrequency>>
+data class MapData(
+    val name: String,
+    val landscape: MapState.Landscape,
+    val dateStart: GameDate,
+    val seed: Long,
+    val height: Int,
+    val width: Int
 ) {
 
     companion object {
-        fun from(state: ProtocolState) = ProtocolData(state.version, state.supportedFrequencies)
+        fun from(state: MapState) = MapData(
+            state.name, state.landscape, state.dateStart,
+            state.seed, state.height, state.width
+        )
     }
 }

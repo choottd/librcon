@@ -17,6 +17,8 @@
 
 package org.choottd.librcon.session.event
 
+import org.choottd.librcon.session.event.data.CompanyData
+
 data class CompanyRemoveEvent(
     val companyData: CompanyData,
     val removeReason: AdminCompanyRemoveReason

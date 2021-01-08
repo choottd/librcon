@@ -23,6 +23,7 @@ import org.choottd.librcon.gamestate.GameState
 import org.choottd.librcon.gamestate.ProtocolState
 import org.choottd.librcon.packet.data.*
 import org.choottd.librcon.session.event.*
+import org.choottd.librcon.session.event.data.*
 
 /**
  * Coroutine that manages generic operations

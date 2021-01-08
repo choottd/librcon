@@ -15,24 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.choottd.librcon.session.event
+package org.choottd.librcon.session.event.data
 
-import org.choottd.librcon.gamestate.ClientState
-import org.choottd.librcon.gamestate.GameDate
+import org.choottd.librcon.gamestate.ProtocolState
+import org.choottd.librcon.packet.data.ServerProtocol
 
-data class ClientData(
-    val clientId: Long,
-    val name: String,
-    val companyId: Int,
-    val language: ClientState.NetworkLanguage,
-    val address: String,
-    val joinDate: GameDate
+data class ProtocolData(
+    val version: Int,
+    val supportedFrequencies: Map<ServerProtocol.AdminUpdateType, Set<ServerProtocol.AdminUpdateFrequency>>
 ) {
 
     companion object {
-        fun from(state: ClientState) = ClientData(
-            state.clientId, state.name, state.companyId,
-            state.language, state.address, state.joinDate
-        )
+        fun from(state: ProtocolState) = ProtocolData(state.version, state.supportedFrequencies)
     }
 }

@@ -17,6 +17,8 @@
 
 package org.choottd.librcon.session.event
 
+import org.choottd.librcon.session.event.data.ClientData
+
 data class ClientErrorEvent(
     val client: ClientData,
     val error: ServerErrorEvent.NetworkErrorCode

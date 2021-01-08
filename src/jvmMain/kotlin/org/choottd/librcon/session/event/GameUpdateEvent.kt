@@ -17,4 +17,6 @@
 
 package org.choottd.librcon.session.event
 
-data class GameUpdateEvent(val company: GameData) : SessionEvent()
+import org.choottd.librcon.session.event.data.GameData
+
+data class GameUpdateEvent(val game: GameData) : SessionEvent()

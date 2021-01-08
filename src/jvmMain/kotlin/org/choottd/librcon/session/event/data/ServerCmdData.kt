@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.choottd.librcon.session.event
+package org.choottd.librcon.session.event.data
 
-import org.choottd.librcon.gamestate.CommandState
-
-data class CommandData(
-    val name: String,
-    val value: Int,
-) {
-
-    companion object {
-        fun from(state: CommandState) = CommandData(state.name, state.value)
-    }
-}
+data class ServerCmdData(
+    val client: ClientData,
+    val company: CompanyData,
+    val command: CommandData,
+    val p1: Long,
+    val p2: Long,
+    val title: Long,
+    val text: String,
+    val frame: Long
+)

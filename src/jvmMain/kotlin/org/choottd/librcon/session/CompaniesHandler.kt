@@ -19,9 +19,9 @@ package org.choottd.librcon.session
 
 import org.choottd.librcon.gamestate.*
 import org.choottd.librcon.packet.data.*
-import org.choottd.librcon.session.event.CompanyData
 import org.choottd.librcon.session.event.CompanyRemoveEvent
 import org.choottd.librcon.session.event.CompanyUpdateEvent
+import org.choottd.librcon.session.event.data.CompanyData
 
 /**
  * Coroutine that manages the state about the companies
@@ -40,82 +40,84 @@ suspend fun Session.companiesHandler(data: CompaniesPacketData) {
         is ServerCompanyEconomy -> {
             val company = globalState.companies[data.companyId]
             val dateCurrent = globalState.dateCurrent
-            if (dateCurrent == null || company == null) {
-                null
-            } else {
-                val economy = EconomyState(
-                    dateCurrent,
-                    data.economy.money,
-                    data.economy.loan,
-                    data.economy.income,
-                )
-                val economyQM1 = PastEconomyState(
-                    dateCurrent.previousQuarter(),
-                    data.economyQM1.value,
-                    data.economyQM1.cargo,
-                    data.economyQM1.performance,
-                )
-                val economyQM2 = PastEconomyState(
-                    economyQM1.date.previousQuarter(),
-                    data.economyQM2.value,
-                    data.economyQM2.cargo,
-                    data.economyQM2.performance,
-                )
+            when {
+                dateCurrent == null -> {
+                    fetchCurrentDate()
+                    null
+                }
+                company == null -> {
+                    fetchCompany(data.companyId)
+                    null
+                }
+                else -> {
+                    val economy = EconomyState(
+                        dateCurrent,
+                        data.economy.money,
+                        data.economy.loan,
+                        data.economy.income,
+                    )
+                    val economyQM1 = PastEconomyState(
+                        dateCurrent.previousQuarter(),
+                        data.economyQM1.value,
+                        data.economyQM1.cargo,
+                        data.economyQM1.performance,
+                    )
+                    val economyQM2 = PastEconomyState(
+                        economyQM1.date.previousQuarter(),
+                        data.economyQM2.value,
+                        data.economyQM2.cargo,
+                        data.economyQM2.performance,
+                    )
 
-                company.economy = economy
-                company.economyHistory = listOf(economyQM1, economyQM2)
+                    company.economy = economy
+                    company.economyHistory = listOf(economyQM1, economyQM2)
 
-                CompanyUpdateEvent(CompanyData.from(company))
+                    CompanyUpdateEvent(CompanyData.from(company))
+                }
             }
         }
 
-        is ServerCompanyNew -> {
-            val company = globalState.companies[data.companyId]
-            if (company != null) {
-                CompanyUpdateEvent(CompanyData.from(company))
-            } else {
+        is ServerCompanyNew -> globalState.companies[data.companyId]
+            ?.let { CompanyUpdateEvent(CompanyData.from(it)) }
+            ?: run {
                 fetchCompany(data.companyId)
                 null
             }
-        }
 
-        is ServerCompanyRemove -> {
-            val company = globalState.companies.remove(data.companyId)
-            if (company != null) {
+        is ServerCompanyRemove -> globalState.companies[data.companyId]
+            ?.let {
                 CompanyRemoveEvent(
-                    CompanyData.from(company),
+                    CompanyData.from(it),
                     CompanyRemoveEvent.AdminCompanyRemoveReason.valueOf(data.removeReason)
                 )
-            } else null
-        }
+            } // otherwise no need to fetch the company, it was removed
 
-        is ServerCompanyStats -> {
-            val company = globalState.companies[data.companyId]
-            if (company != null) {
-                company.vehicles = data.vehicles
-                company.stations = data.stations
-                CompanyUpdateEvent(CompanyData.from(company))
-            } else {
+        is ServerCompanyStats -> globalState.companies[data.companyId]
+            ?.let {
+                it.vehicles = data.vehicles
+                it.stations = data.stations
+                CompanyUpdateEvent(CompanyData.from(it))
+            }
+            ?: run {
                 fetchCompany(data.companyId)
                 null
             }
-        }
 
-        is ServerCompanyUpdate -> {
-            val company = globalState.companies[data.companyId]
-            if (company != null) {
-                company.name = data.name
-                company.president = data.president
-                company.color = Color.valueOf(data.color)
-                company.passwordProtected = data.passwordProtected
-                company.bankruptcy = data.bankruptcy
-                company.shares = data.shares
-                CompanyUpdateEvent(CompanyData.from(company))
-            } else {
+        is ServerCompanyUpdate -> globalState.companies[data.companyId]
+            ?.let {
+                it.name = data.name
+                it.president = data.president
+                it.color = Color.valueOf(data.color)
+                it.passwordProtected = data.passwordProtected
+                it.bankruptcy = data.bankruptcy
+                it.shares = data.shares
+                CompanyUpdateEvent(CompanyData.from(it))
+            }
+            ?: run {
                 fetchCompany(data.companyId)
                 null
             }
-        }
+
     }
 
     sendEvent(event)

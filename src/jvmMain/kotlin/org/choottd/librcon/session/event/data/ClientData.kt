@@ -15,20 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.choottd.librcon.session.event
+package org.choottd.librcon.session.event.data
 
-import org.choottd.librcon.gamestate.EconomyState
+import org.choottd.librcon.gamestate.ClientState
 import org.choottd.librcon.gamestate.GameDate
-import java.math.BigInteger
 
-data class EconomyData(
-    val date: GameDate,
-    val money: BigInteger,
-    val loan: BigInteger,
-    val income: BigInteger
+data class ClientData(
+    val clientId: Long,
+    val name: String,
+    val companyId: Int,
+    val language: ClientState.NetworkLanguage,
+    val address: String,
+    val joinDate: GameDate
 ) {
 
     companion object {
-        fun from(state: EconomyState) = EconomyData(state.date, state.money, state.loan,state.income)
+        fun from(state: ClientState) = ClientData(
+            state.clientId, state.name, state.companyId,
+            state.language, state.address, state.joinDate
+        )
     }
 }

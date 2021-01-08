@@ -17,4 +17,6 @@
 
 package org.choottd.librcon.session.event
 
+import org.choottd.librcon.session.event.data.ProtocolData
+
 data class ServerProtocolEvent(val protocol: ProtocolData) : SessionEvent()

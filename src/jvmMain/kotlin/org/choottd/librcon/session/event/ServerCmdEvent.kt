@@ -17,4 +17,6 @@
 
 package org.choottd.librcon.session.event
 
+import org.choottd.librcon.session.event.data.ServerCmdData
+
 data class ServerCmdEvent(val command: ServerCmdData) : SessionEvent()

@@ -17,4 +17,6 @@
 
 package org.choottd.librcon.session.event
 
+import org.choottd.librcon.session.event.data.ClientData
+
 data class ClientJoinEvent(val client: ClientData) : SessionEvent()

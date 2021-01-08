@@ -21,48 +21,64 @@ import org.choottd.librcon.gamestate.ClientState
 import org.choottd.librcon.gamestate.GameStateService
 import org.choottd.librcon.packet.data.*
 import org.choottd.librcon.session.event.*
+import org.choottd.librcon.session.event.data.ClientData
 
 /**
  * Coroutine that manages the state about the clients
  */
-
 suspend fun Session.clientsHandler(data: ClientsPacketData) {
     val event = when (data) {
-        is ServerChat -> {
-            val client = globalState.clients[data.clientId]
-            if (client != null) ChatEvent(
-                ChatEvent.NetworkAction.valueOf(data.networkAction),
-                ChatEvent.DestType.valueOf(data.destinationType),
-                client,
-                data.message,
-                data.data
-            ) else null
-        }
+        is ServerChat -> globalState.clients[data.clientId]
+            ?.let {
+                ChatEvent(
+                    ChatEvent.NetworkAction.valueOf(data.networkAction),
+                    ChatEvent.DestType.valueOf(data.destinationType),
+                    it,
+                    data.message,
+                    data.data
+                )
+            }
+            ?: run {
+                fetchClient(data.clientId)
+                null
+            }
 
-        is ServerClientJoin -> {
-            val client = globalState.clients[data.clientId]
-            if (client != null) ClientJoinEvent(ClientData.from(client)) else null
-        }
+        is ServerClientJoin -> globalState.clients[data.clientId]
+            ?.let { ClientJoinEvent(ClientData.from(it)) }
+            ?: run {
+                fetchClient(data.clientId)
+                null
+            }
 
-        is ServerClientQuit -> {
-            val client = globalState.clients[data.clientId]
-            if (client != null) ClientQuitEvent(ClientData.from(client)) else null
-        }
+        is ServerClientQuit -> globalState.clients[data.clientId]
+            ?.let {
+                ClientQuitEvent(ClientData.from(it))
+            }
+            ?: run {
+                fetchClient(data.clientId)
+                null
+            }
 
-        is ServerClientUpdate -> {
-            val client = globalState.clients[data.clientId]
-            if (client != null) {
-                client.name = data.name
-                client.companyId = data.companyId
-                ClientUpdateEvent(ClientData.from(client))
-            } else null
-        }
+        is ServerClientUpdate -> globalState.clients[data.clientId]
+            ?.let {
+                it.name = data.name
+                it.companyId = data.companyId
+                ClientUpdateEvent(ClientData.from(it))
+            }
+            ?: run {
+                fetchClient(data.clientId)
+                null
+            }
 
-        is ServerClientError -> {
-            val client = globalState.clients.remove(data.clientId)
-            val error = ServerErrorEvent.NetworkErrorCode.valueOf(data.error)
-            if (client != null) ClientErrorEvent(ClientData.from(client), error) else null
-        }
+        is ServerClientError -> globalState.clients.remove(data.clientId)
+            ?.let {
+                val error = ServerErrorEvent.NetworkErrorCode.valueOf(data.error)
+                ClientErrorEvent(ClientData.from(it), error)
+            }
+            ?: run {
+                fetchClient(data.clientId)
+                null
+            }
 
         is ServerClientInfo -> {
             val client = ClientState(

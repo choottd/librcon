@@ -17,4 +17,6 @@
 
 package org.choottd.librcon.session.event
 
+import org.choottd.librcon.session.event.data.CompanyData
+
 data class CompanyUpdateEvent(val company: CompanyData) : SessionEvent()
