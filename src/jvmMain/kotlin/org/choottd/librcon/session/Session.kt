@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import org.choottd.librcon.HasLogger
 import org.choottd.librcon.connection.ServerConnection
 import org.choottd.librcon.gamestate.GlobalState
 import org.choottd.librcon.packet.InputPacketService
@@ -34,6 +33,7 @@ import org.choottd.librcon.packet.PacketType.*
 import org.choottd.librcon.packet.data.*
 import org.choottd.librcon.session.event.ChatEvent
 import org.choottd.librcon.session.event.SessionEvent
+import org.slf4j.LoggerFactory
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("unused")
@@ -43,7 +43,7 @@ class Session(
     private val password: String,
     host: String,
     port: Int
-) : CoroutineScope, HasLogger {
+) : CoroutineScope {
 
     private var state = State.NONE
     private val job = Job()
@@ -253,5 +253,9 @@ class Session(
 
     private enum class State {
         NONE, STARTED, STOPPED
+    }
+
+    companion object {
+        internal val logger = LoggerFactory.getLogger(Session::class.java)
     }
 }

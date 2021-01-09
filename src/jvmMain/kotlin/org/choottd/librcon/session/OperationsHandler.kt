@@ -73,7 +73,7 @@ suspend fun Session.operationsHandler(data: OperationsPacketData) {
                     if (pauseMode != null) {
                         globalState.setPauseMode(pauseMode, paused)
                     } else {
-                        logger.error("pauseMode is null! p1: ${data.p1}, p2: ${data.p2}")
+                        Session.logger.error("pauseMode is null! p1: ${data.p1}, p2: ${data.p2}")
                     }
                 }
 
