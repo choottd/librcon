@@ -30,8 +30,10 @@ import org.choottd.librcon.packet.InputPacketService
 import org.choottd.librcon.packet.InvalidPacketException
 import org.choottd.librcon.packet.OutputPacketService
 import org.choottd.librcon.packet.PacketType.*
-import org.choottd.librcon.packet.data.*
-import org.choottd.librcon.session.event.ChatEvent
+import org.choottd.librcon.packet.data.ClientsPacketData
+import org.choottd.librcon.packet.data.CompaniesPacketData
+import org.choottd.librcon.packet.data.GameStatePacketData
+import org.choottd.librcon.packet.data.OperationsPacketData
 import org.choottd.librcon.session.event.SessionEvent
 import org.slf4j.LoggerFactory
 import kotlin.coroutines.CoroutineContext
@@ -47,7 +49,7 @@ class Session(
 
     private var state = State.NONE
     private val job = Job()
-    private val connection: ServerConnection = ServerConnection(host, port)
+    internal val connection: ServerConnection = ServerConnection(host, port)
 
     internal val globalState = GlobalState()
 
@@ -145,22 +147,6 @@ class Session(
         }
     }
 
-    fun fetchClient(clientId: Long) = sendAdminPoll(ServerProtocol.AdminUpdateType.CLIENT_INFO, clientId)
-
-    fun fetchClients() = sendAdminPoll(ServerProtocol.AdminUpdateType.CLIENT_INFO, Long.MAX_VALUE)
-
-    fun fetchCompany(companyId: Int) = sendAdminPoll(ServerProtocol.AdminUpdateType.COMPANY_INFO, companyId.toLong())
-
-    fun fetchCompanies() = sendAdminPoll(ServerProtocol.AdminUpdateType.COMPANY_INFO, Long.MAX_VALUE)
-
-    fun fetchCompanyEconomy() = sendAdminPoll(ServerProtocol.AdminUpdateType.COMPANY_ECONOMY)
-
-    fun fetchCompanyStats() = sendAdminPoll(ServerProtocol.AdminUpdateType.COMPANY_STATS)
-
-    fun fetchCommands() = sendAdminPoll(ServerProtocol.AdminUpdateType.CMD_NAMES)
-
-    fun fetchCurrentDate() = sendAdminPoll(ServerProtocol.AdminUpdateType.DATE)
-
     private fun sendAdminJoin() = launch {
         val adminJoinPacket = OutputPacketService.adminJoin(password, botName, botVersion)
         connection.writePacket(adminJoinPacket)
@@ -169,86 +155,6 @@ class Session(
     private fun sendAdminQuit() = launch {
         val adminQuitPacket = OutputPacketService.adminQuit()
         connection.writePacket(adminQuitPacket)
-    }
-
-    fun sendBroadcastAdminMessage(message: String) = launch {
-        val packet = OutputPacketService.adminChat(
-            ChatEvent.NetworkAction.SERVER_MESSAGE,
-            ChatEvent.DestType.BROADCAST,
-            0,
-            message,
-            0
-        )
-        connection.writePacket(packet)
-    }
-
-    fun sendPrivateAdminMessageToClient(clientId: Long, message: String) = launch {
-        val packet = OutputPacketService.adminChat(
-            ChatEvent.NetworkAction.SERVER_MESSAGE,
-            ChatEvent.DestType.CLIENT,
-            clientId,
-            message,
-            0
-        )
-        connection.writePacket(packet)
-    }
-
-    fun sendPublicChat(message: String) = launch {
-        val packet =
-            OutputPacketService.adminChat(ChatEvent.NetworkAction.CHAT, ChatEvent.DestType.BROADCAST, 0, message, 0)
-        connection.writePacket(packet)
-    }
-
-    fun sendPrivateChat(clientId: Long, message: String) = launch {
-        val packet = OutputPacketService.adminChat(
-            ChatEvent.NetworkAction.CHAT_CLIENT,
-            ChatEvent.DestType.CLIENT,
-            clientId,
-            message,
-            0
-        )
-        connection.writePacket(packet)
-    }
-
-    fun sendTeamChat(companyId: Int, message: String) = launch {
-        val packet = OutputPacketService.adminChat(
-            ChatEvent.NetworkAction.SERVER_MESSAGE,
-            ChatEvent.DestType.TEAM,
-            companyId.toLong(),
-            message,
-            0
-        )
-        connection.writePacket(packet)
-    }
-
-    fun sendAdminGameScript(json: String) = launch {
-        val packet = OutputPacketService.adminGamescript(json)
-        connection.writePacket(packet)
-    }
-
-    fun sendAdminUpdateFrequency(type: ServerProtocol.AdminUpdateType, frequency: ServerProtocol.AdminUpdateFrequency) =
-        launch {
-            val packet = OutputPacketService.adminUpdateFrequency(type, frequency)
-            connection.writePacket(packet)
-        }
-
-    fun sendAdminPing(value: Long) = launch {
-        val packet = OutputPacketService.adminPing(value)
-        connection.writePacket(packet)
-    }
-
-    private fun sendAdminPoll(type: ServerProtocol.AdminUpdateType, data: Long = 0) = launch {
-        if (globalState.protocol?.isSupported(type, ServerProtocol.AdminUpdateFrequency.POLL) != true) {
-            logger.error("The server does not support POLL for $type")
-            throw InvalidPollingException("The server does not support POLL for $type")
-        }
-        val packet = OutputPacketService.adminPoll(type, data)
-        connection.writePacket(packet)
-    }
-
-    fun sendAdminRcon(command: String) = launch {
-        val packet = OutputPacketService.adminRcon(command)
-        connection.writePacket(packet)
     }
 
     private enum class State {

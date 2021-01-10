@@ -28,7 +28,7 @@ import org.choottd.librcon.session.event.data.*
 /**
  * Coroutine that manages generic operations
  */
-suspend fun Session.operationsHandler(data: OperationsPacketData) {
+internal suspend fun Session.operationsHandler(data: OperationsPacketData) {
     val event = when (data) {
         is ServerBanned -> {
             close()

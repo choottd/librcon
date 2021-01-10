@@ -26,7 +26,7 @@ import org.choottd.librcon.session.event.data.ClientData
 /**
  * Coroutine that manages the state about the clients
  */
-suspend fun Session.clientsHandler(data: ClientsPacketData) {
+internal suspend fun Session.clientsHandler(data: ClientsPacketData) {
     val event = when (data) {
         is ServerChat -> globalState.clients[data.clientId]
             ?.let {

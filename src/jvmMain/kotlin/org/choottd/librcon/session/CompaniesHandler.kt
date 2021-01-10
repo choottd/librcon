@@ -26,7 +26,7 @@ import org.choottd.librcon.session.event.data.CompanyData
 /**
  * Coroutine that manages the state about the companies
  */
-suspend fun Session.companiesHandler(data: CompaniesPacketData) {
+internal suspend fun Session.companiesHandler(data: CompaniesPacketData) {
     val event = when (data) {
         is ServerCompanyInfo -> {
             val company = CompanyState(
@@ -42,7 +42,7 @@ suspend fun Session.companiesHandler(data: CompaniesPacketData) {
             val dateCurrent = globalState.dateCurrent
             when {
                 dateCurrent == null -> {
-                    fetchCurrentDate()
+                    fetchGameDate()
                     null
                 }
                 company == null -> {

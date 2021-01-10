@@ -30,7 +30,7 @@ import org.choottd.librcon.session.event.GameUpdateEvent
 /**
  * Coroutine that manages the game state
  */
-suspend fun Session.gameStateHandler(data: GameStatePacketData) {
+internal suspend fun Session.gameStateHandler(data: GameStatePacketData) {
     val event = when (data) {
 
         is ServerWelcome -> {
