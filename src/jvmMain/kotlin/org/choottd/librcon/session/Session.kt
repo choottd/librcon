@@ -35,6 +35,7 @@ import org.choottd.librcon.packet.data.CompaniesPacketData
 import org.choottd.librcon.packet.data.GameStatePacketData
 import org.choottd.librcon.packet.data.OperationsPacketData
 import org.choottd.librcon.session.event.SessionEvent
+import org.choottd.librcon.session.event.data.GlobalStateData
 import org.slf4j.LoggerFactory
 import kotlin.coroutines.CoroutineContext
 
@@ -52,6 +53,7 @@ class Session(
     internal val connection: ServerConnection = ServerConnection(host, port)
 
     internal val globalState = GlobalState()
+    val latestServerData: GlobalStateData get() = GlobalStateData.from(globalState)
 
     private val _sessionEvents = MutableSharedFlow<SessionEvent>()
     val sessionEvents: SharedFlow<SessionEvent>
