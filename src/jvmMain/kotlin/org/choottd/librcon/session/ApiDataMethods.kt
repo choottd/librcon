@@ -19,17 +19,23 @@
 
 package org.choottd.librcon.session
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.choottd.librcon.packet.OutputPacketService
 import org.choottd.librcon.packet.data.ServerProtocol
+import org.choottd.librcon.session.event.GlobalUpdateEvent
 
 fun Session.fetchAllData() = launch {
-    fetchCommands()
-    fetchGameDate()
-    fetchClients()
-    fetchCompanies().join() // we want to have the companies before updating the rest of their data
-    fetchCompaniesStats()
-    fetchCompaniesEconomies()
+    withContext(Dispatchers.IO) {
+        fetchCommands()
+        fetchGameDate()
+        fetchClients()
+        fetchCompanies().join() // we want to have the companies before updating the rest of their data
+        fetchCompaniesStats()
+        fetchCompaniesEconomies()
+    }
+    sendEvent(GlobalUpdateEvent(latestServerData))
 }
 
 fun Session.fetchClient(clientId: Long) = sendAdminPoll(ServerProtocol.AdminUpdateType.CLIENT_INFO, clientId)
