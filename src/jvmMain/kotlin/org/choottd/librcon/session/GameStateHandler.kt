@@ -26,6 +26,7 @@ import org.choottd.librcon.packet.data.ServerWelcome
 import org.choottd.librcon.session.event.data.GameData
 import org.choottd.librcon.session.event.GameDateEvent
 import org.choottd.librcon.session.event.GameUpdateEvent
+import org.choottd.librcon.session.event.SessionOpenEvent
 
 /**
  * Coroutine that manages the game state
@@ -41,6 +42,7 @@ internal suspend fun Session.gameStateHandler(data: GameStatePacketData) {
             val game = GameState(data.gameName, data.gameVersion, data.gameDedicated, map)
             globalState.gameState = game
             state = Session.State.WELCOME_RECEIVED
+            sendEvent(SessionOpenEvent())
             GameUpdateEvent(GameData.from(game))
         }
 

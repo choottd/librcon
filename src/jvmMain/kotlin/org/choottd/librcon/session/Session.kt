@@ -20,7 +20,6 @@ package org.choottd.librcon.session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -36,6 +35,7 @@ import org.choottd.librcon.packet.data.ClientsPacketData
 import org.choottd.librcon.packet.data.CompaniesPacketData
 import org.choottd.librcon.packet.data.GameStatePacketData
 import org.choottd.librcon.packet.data.OperationsPacketData
+import org.choottd.librcon.session.event.SessionClosedEvent
 import org.choottd.librcon.session.event.SessionEvent
 import org.choottd.librcon.session.event.data.GlobalStateData
 import org.slf4j.LoggerFactory
@@ -51,17 +51,8 @@ class Session(
 ) : CoroutineScope {
 
     internal var state = State.NONE
-        set(value) {
-            field = value
-            if (value == State.WELCOME_RECEIVED) {
-                outputPacketHandler()
-            }
-        }
-
     private val job = Job()
-
     private val connection: ServerConnection = ServerConnection(host, port)
-    internal val outputChannel = Channel<OutputPacket>(128)
 
     internal val globalState = GlobalState()
     val latestServerData: GlobalStateData get() = GlobalStateData.from(globalState)
@@ -92,6 +83,7 @@ class Session(
     fun close() = launch {
         sendAdminQuit()
         state = State.SESSION_STOPPED
+        sendEvent(SessionClosedEvent())
         job.cancel()
     }
 
@@ -99,7 +91,7 @@ class Session(
         while (true) {
             val inputPacket = connection.readPacket()
             val packetData = InputPacketService.parseData(inputPacket)
-            logger.debug(packetData.toString())
+            logger.debug("[RECEIVED] {}", packetData)
 
             when (packetData.type) {
                 ADMIN_JOIN,
@@ -153,16 +145,22 @@ class Session(
         }
     }
 
-    private fun outputPacketHandler() = launch {
-        while (true) {
-            val packet = outputChannel.receive()
-            connection.writePacket(packet)
+    internal suspend fun writeOutputPacket(packet: OutputPacket) {
+        when (state) {
+            State.WELCOME_RECEIVED -> {
+                connection.writePacket(packet)
+                logger.debug("[SENT] {}", packet)
+            }
+            else -> {
+                logger.warn("Session in invalid state $state")
+            }
         }
+
     }
 
     internal suspend fun sendEvent(event: SessionEvent?) {
         if (event != null) {
-            logger.debug("Emitting event $event")
+            logger.debug("Emitting event {}", event)
             _sessionEvents.emit(event)
         }
     }
