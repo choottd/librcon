@@ -19,10 +19,6 @@ package org.choottd.librcon.packet
 
 abstract class Packet(protected val buffer: ByteArray) {
 
-    override fun toString(): String {
-        return buffer.toString()
-    }
-
     companion object {
         const val FF_MASK = 0xFF.toByte()
         const val SEND_MTU = 1460

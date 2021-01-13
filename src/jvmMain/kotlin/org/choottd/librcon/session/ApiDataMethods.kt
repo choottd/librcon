@@ -57,12 +57,12 @@ fun Session.fetchGameDate() = sendAdminPoll(ServerProtocol.AdminUpdateType.DATE)
 
 fun Session.sendAdminRcon(command: String) = launch {
     val packet = OutputPacketService.adminRcon(command)
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }
 
 fun Session.sendAdminGameScript(json: String) = launch {
-    val packet = OutputPacketService.adminGamescript(json)
-    writeOutputPacket(packet)
+    val packet = OutputPacketService.adminGameScript(json)
+    queueOutputPacket(packet)
 }
 
 fun Session.sendAdminUpdateFrequency(
@@ -71,12 +71,12 @@ fun Session.sendAdminUpdateFrequency(
 ) =
     launch {
         val packet = OutputPacketService.adminUpdateFrequency(type, frequency)
-        writeOutputPacket(packet)
+        queueOutputPacket(packet)
     }
 
 fun Session.sendAdminPing(value: Long) = launch {
     val packet = OutputPacketService.adminPing(value)
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }
 
 private fun Session.sendAdminPoll(type: ServerProtocol.AdminUpdateType, data: Long = 0) = launch {
@@ -86,7 +86,7 @@ private fun Session.sendAdminPoll(type: ServerProtocol.AdminUpdateType, data: Lo
                 Session.logger.error("The server does not support POLL for $type")
             } else {
                 val packet = OutputPacketService.adminPoll(type, data)
-                writeOutputPacket(packet)
+                queueOutputPacket(packet)
             }
         }
         else -> {

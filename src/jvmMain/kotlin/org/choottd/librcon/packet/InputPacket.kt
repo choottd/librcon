@@ -78,4 +78,8 @@ class InputPacket(buffer: ByteArray) : Packet(buffer) {
         }
     }
 
+    override fun toString(): String {
+        return "InputPacket - ${buffer.size} bytes"
+    }
+
 }

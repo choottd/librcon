@@ -20,6 +20,7 @@ package org.choottd.librcon.session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -53,6 +54,7 @@ class Session(
     internal var state = State.NONE
     private val job = Job()
     private val connection: ServerConnection = ServerConnection(host, port)
+    private val outputChannel = Channel<OutputPacket>(Channel.UNLIMITED)
 
     internal val globalState = GlobalState()
     val latestServerData: GlobalStateData get() = GlobalStateData.from(globalState)
@@ -75,6 +77,8 @@ class Session(
 
         // start to listen for packets
         inputPacketHandler()
+        // start also to write packets
+        outputPacketHandler()
 
         // send the join packet to authenticate
         sendAdminJoin()
@@ -145,10 +149,17 @@ class Session(
         }
     }
 
-    internal suspend fun writeOutputPacket(packet: OutputPacket) {
+    private fun outputPacketHandler() = launch {
+        while (true) {
+            val packet = outputChannel.receive()
+            connection.writePacket(packet)
+        }
+    }
+
+    internal suspend fun queueOutputPacket(packet: OutputPacket) {
         when (state) {
             State.WELCOME_RECEIVED -> {
-                connection.writePacket(packet)
+                outputChannel.send(packet)
                 logger.debug("[SENT] {}", packet)
             }
             else -> {
@@ -167,12 +178,12 @@ class Session(
 
     private fun sendAdminJoin() = launch {
         val adminJoinPacket = OutputPacketService.adminJoin(password, botName, botVersion)
-        connection.writePacket(adminJoinPacket)
+        outputChannel.send(adminJoinPacket)
     }
 
     private fun sendAdminQuit() = launch {
         val adminQuitPacket = OutputPacketService.adminQuit()
-        connection.writePacket(adminQuitPacket)
+        outputChannel.send(adminQuitPacket)
     }
 
     internal enum class State {

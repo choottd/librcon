@@ -31,7 +31,7 @@ fun Session.sendBroadcastAdminMessage(message: String) = launch {
         message,
         0
     )
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }
 
 fun Session.sendPrivateAdminMessageToClient(clientId: Long, message: String) = launch {
@@ -42,13 +42,13 @@ fun Session.sendPrivateAdminMessageToClient(clientId: Long, message: String) = l
         message,
         0
     )
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }
 
 fun Session.sendPublicChat(message: String) = launch {
     val packet =
         OutputPacketService.adminChat(ChatEvent.NetworkAction.CHAT, ChatEvent.DestType.BROADCAST, 0, message, 0)
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }
 
 fun Session.sendPrivateChat(clientId: Long, message: String) = launch {
@@ -59,7 +59,7 @@ fun Session.sendPrivateChat(clientId: Long, message: String) = launch {
         message,
         0
     )
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }
 
 fun Session.sendTeamChat(companyId: Int, message: String) = launch {
@@ -70,5 +70,5 @@ fun Session.sendTeamChat(companyId: Int, message: String) = launch {
         message,
         0
     )
-    writeOutputPacket(packet)
+    queueOutputPacket(packet)
 }

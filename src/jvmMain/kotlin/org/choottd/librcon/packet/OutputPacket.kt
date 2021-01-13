@@ -28,6 +28,10 @@ class OutputPacket private constructor(buffer: ByteArray) : Packet(buffer) {
     val dataArray: ByteArray
         get() = buffer
 
+    override fun toString(): String {
+        return "OutputPacket - ${buffer.size} bytes"
+    }
+
     internal class Builder(type: PacketType) {
         private val buffer: ByteArray = ByteArray(SEND_MTU)
         private var position = POS_PACKET_TYPE + 1

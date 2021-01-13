@@ -38,7 +38,7 @@ object OutputPacketService {
             .writeUint64(data)
             .build()
 
-    fun adminGamescript(json: String) =
+    fun adminGameScript(json: String) =
         OutputPacket.Builder(PacketType.ADMIN_GAMESCRIPT)
             .writeString(json)
             .build()
