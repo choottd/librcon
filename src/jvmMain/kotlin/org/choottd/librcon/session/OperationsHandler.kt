@@ -100,6 +100,7 @@ internal suspend fun Session.operationsHandler(data: OperationsPacketData) {
         is ServerProtocol -> {
             val protocol = ProtocolState(data.version, data.supportedFrequencies)
             globalState.protocol = protocol
+            state = Session.State.PROTOCOL_RECEIVED
             ServerProtocolEvent(ProtocolData.from(protocol))
         }
 

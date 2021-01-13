@@ -20,6 +20,7 @@ package org.choottd.librcon.session
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -28,6 +29,7 @@ import org.choottd.librcon.connection.ServerConnection
 import org.choottd.librcon.gamestate.GlobalState
 import org.choottd.librcon.packet.InputPacketService
 import org.choottd.librcon.packet.InvalidPacketException
+import org.choottd.librcon.packet.OutputPacket
 import org.choottd.librcon.packet.OutputPacketService
 import org.choottd.librcon.packet.PacketType.*
 import org.choottd.librcon.packet.data.ClientsPacketData
@@ -48,9 +50,18 @@ class Session(
     port: Int
 ) : CoroutineScope {
 
-    private var state = State.NONE
+    internal var state = State.NONE
+        set(value) {
+            field = value
+            if (value == State.WELCOME_RECEIVED) {
+                outputPacketHandler()
+            }
+        }
+
     private val job = Job()
-    internal val connection: ServerConnection = ServerConnection(host, port)
+
+    private val connection: ServerConnection = ServerConnection(host, port)
+    internal val outputChannel = Channel<OutputPacket>(128)
 
     internal val globalState = GlobalState()
     val latestServerData: GlobalStateData get() = GlobalStateData.from(globalState)
@@ -63,16 +74,16 @@ class Session(
         get() = Dispatchers.IO + job
 
     fun open(): Job = launch {
-        if (state == State.STOPPED) {
+        if (state == State.SESSION_STOPPED) {
             throw RuntimeException("Session is closed")
         }
 
         // init the connection
         connection.open()
-        state = State.STARTED
+        state = State.SESSION_OPENED
 
         // start to listen for packets
-        packetsHandler()
+        inputPacketHandler()
 
         // send the join packet to authenticate
         sendAdminJoin()
@@ -80,11 +91,11 @@ class Session(
 
     fun close() = launch {
         sendAdminQuit()
-        state = State.STOPPED
+        state = State.SESSION_STOPPED
         job.cancel()
     }
 
-    private fun packetsHandler() = launch {
+    private fun inputPacketHandler() = launch {
         while (true) {
             val inputPacket = connection.readPacket()
             val packetData = InputPacketService.parseData(inputPacket)
@@ -142,6 +153,13 @@ class Session(
         }
     }
 
+    private fun outputPacketHandler() = launch {
+        while (true) {
+            val packet = outputChannel.receive()
+            connection.writePacket(packet)
+        }
+    }
+
     internal suspend fun sendEvent(event: SessionEvent?) {
         if (event != null) {
             logger.debug("Emitting event $event")
@@ -159,8 +177,8 @@ class Session(
         connection.writePacket(adminQuitPacket)
     }
 
-    private enum class State {
-        NONE, STARTED, STOPPED
+    internal enum class State {
+        NONE, SESSION_OPENED, PROTOCOL_RECEIVED, WELCOME_RECEIVED, SESSION_STOPPED
     }
 
     companion object {

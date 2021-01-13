@@ -34,10 +34,13 @@ internal suspend fun Session.gameStateHandler(data: GameStatePacketData) {
     val event = when (data) {
 
         is ServerWelcome -> {
-            val map = MapState(data.mapName, MapState.Landscape.valueOf(data.mapLandscape),
-                GameStateService.convertDate(data.mapDateStart), data.mapSeed, data.mapHeight, data.mapWidth)
+            val map = MapState(
+                data.mapName, MapState.Landscape.valueOf(data.mapLandscape),
+                GameStateService.convertDate(data.mapDateStart), data.mapSeed, data.mapHeight, data.mapWidth
+            )
             val game = GameState(data.gameName, data.gameVersion, data.gameDedicated, map)
             globalState.gameState = game
+            state = Session.State.WELCOME_RECEIVED
             GameUpdateEvent(GameData.from(game))
         }
 
