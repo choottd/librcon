@@ -18,9 +18,9 @@
 package org.choottd.librcon.packet.data
 
 import org.choottd.librcon.packet.InputPacket
-import org.choottd.librcon.packet.PacketType
+import org.choottd.librcon.packet.InputPacketType
 
-sealed class GameStatePacketData(type: PacketType) : PacketData(type)
+sealed class GameStatePacketData(type: InputPacketType) : PacketData(type)
 
 class ServerWelcome(packet: InputPacket) : GameStatePacketData(packet.type) {
     val gameName: String = packet.readString()

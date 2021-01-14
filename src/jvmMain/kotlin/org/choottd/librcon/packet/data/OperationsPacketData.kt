@@ -18,9 +18,9 @@
 package org.choottd.librcon.packet.data
 
 import org.choottd.librcon.packet.InputPacket
-import org.choottd.librcon.packet.PacketType
+import org.choottd.librcon.packet.InputPacketType
 
-sealed class OperationsPacketData(type: PacketType) : PacketData(type)
+sealed class OperationsPacketData(type: InputPacketType) : PacketData(type)
 
 class ServerNewGame(packet: InputPacket) : OperationsPacketData(packet.type)
 
@@ -29,6 +29,8 @@ class ServerBanned(packet: InputPacket) : OperationsPacketData(packet.type)
 class ServerShutdown(packet: InputPacket) : OperationsPacketData(packet.type)
 
 class ServerFull(packet: InputPacket) : OperationsPacketData(packet.type)
+
+class InvalidPacket(packet: InputPacket) : OperationsPacketData(packet.type)
 
 class ServerPong(packet: InputPacket) : OperationsPacketData(packet.type) {
     val payload: Long = packet.readUint32()

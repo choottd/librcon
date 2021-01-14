@@ -17,23 +17,13 @@
 
 package org.choottd.librcon.packet
 
-import org.choottd.librcon.packet.PacketType.*
+import org.choottd.librcon.packet.InputPacketType.*
 import org.choottd.librcon.packet.data.*
 
 object InputPacketService {
 
     fun parseData(packet: InputPacket): PacketData = when (packet.type) {
-        ADMIN_JOIN,
-        ADMIN_QUIT,
-        ADMIN_POLL,
-        ADMIN_CHAT,
-        ADMIN_RCON,
-        ADMIN_UPDATE_FREQUENCY,
-        ADMIN_PING -> throw InvalidPacketException("Unexpected packet of type ${packet.type}")
-
-        INVALID_ADMIN_PACKET -> throw InvalidPacketException("INVALID_ADMIN_PACKET received")
-
-        ADMIN_GAMESCRIPT -> ServerGameScript(packet)
+        INVALID_ADMIN_PACKET -> InvalidPacket(packet)
         SERVER_FULL -> ServerFull(packet)
         SERVER_ERROR -> ServerError(packet)
         SERVER_PROTOCOL -> ServerProtocol(packet)

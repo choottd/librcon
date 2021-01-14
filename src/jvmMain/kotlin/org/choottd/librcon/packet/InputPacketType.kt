@@ -17,17 +17,9 @@
 
 package org.choottd.librcon.packet
 
-enum class PacketType(  ///< An invalid marker for admin packets.
+enum class InputPacketType(  ///< An invalid marker for admin packets.
     val value: Int
 ) {
-    ADMIN_JOIN(0),  ///< The admin announces and authenticates itself to the server.
-    ADMIN_QUIT(1),  ///< The admin tells the server that it is quitting.
-    ADMIN_UPDATE_FREQUENCY(2),  ///< The admin tells the server the update frequency of a particular piece of information.
-    ADMIN_POLL(3),  ///< The admin explicitly polls for a piece of information.
-    ADMIN_CHAT(4),  ///< The admin sends a chat message to be distributed.
-    ADMIN_RCON(5),  ///< The admin sends a remote console command.
-    ADMIN_GAMESCRIPT(6),  ///< The admin sends a JSON string for the GameScript.
-    ADMIN_PING(7),  ///< The admin sends a ping to the server, expecting a ping-reply (PONG) packet.
     SERVER_FULL(100),  ///< The server tells the admin it cannot accept the admin.
     SERVER_BANNED(101),  ///< The server tells the admin it is banned.
     SERVER_ERROR(102),  ///< The server tells the admin an error has occurred.
@@ -58,7 +50,7 @@ enum class PacketType(  ///< An invalid marker for admin packets.
     INVALID_ADMIN_PACKET(0xFF);
 
     companion object {
-        private val valuesMap = values().associateBy(PacketType::value)
+        private val valuesMap = values().associateBy(InputPacketType::value)
         fun valueOf(value: Int) = valuesMap[value] ?: INVALID_ADMIN_PACKET
     }
 }

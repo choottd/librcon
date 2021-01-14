@@ -113,6 +113,8 @@ internal suspend fun Session.operationsHandler(data: OperationsPacketData) {
         is ServerRCon -> ServerRConEvent(Color.valueOf(data.color), data.message)
 
         is ServerRConEnd -> ServerRConEndEvent()
+
+        is InvalidPacket -> null
     }
 
     sendEvent(event)

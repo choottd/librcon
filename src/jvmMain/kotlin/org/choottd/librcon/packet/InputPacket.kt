@@ -26,7 +26,7 @@ import java.math.BigInteger
 class InputPacket(buffer: ByteArray) : Packet(buffer) {
     private var position = POS_PACKET_TYPE + 1
 
-    val type: PacketType = PacketType.valueOf((buffer[POS_PACKET_TYPE].toInt() and FF_MASK))
+    val type: InputPacketType = InputPacketType.valueOf((buffer[POS_PACKET_TYPE].toInt() and FF_MASK))
 
     fun readBool(): Boolean {
         return buffer[position++].toInt() and FF_MASK > 0

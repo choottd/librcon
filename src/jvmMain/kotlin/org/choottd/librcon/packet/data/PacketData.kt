@@ -17,6 +17,6 @@
 
 package org.choottd.librcon.packet.data
 
-import org.choottd.librcon.packet.PacketType
+import org.choottd.librcon.packet.InputPacketType
 
-abstract class PacketData(val type: PacketType)
+abstract class PacketData(val type: InputPacketType)

@@ -19,10 +19,10 @@ package org.choottd.librcon.packet.data
 
 import org.choottd.librcon.gamestate.CompanyState
 import org.choottd.librcon.packet.InputPacket
-import org.choottd.librcon.packet.PacketType
+import org.choottd.librcon.packet.InputPacketType
 import java.math.BigInteger
 
-sealed class CompaniesPacketData(type: PacketType) : PacketData(type)
+sealed class CompaniesPacketData(type: InputPacketType) : PacketData(type)
 
 class ServerCompanyInfo(packet: InputPacket) : CompaniesPacketData(packet.type) {
     val companyId: Int = packet.readUint8()

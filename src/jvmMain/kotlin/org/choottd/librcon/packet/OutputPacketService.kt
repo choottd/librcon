@@ -23,14 +23,14 @@ import org.choottd.librcon.session.event.ChatEvent
 object OutputPacketService {
 
     fun adminJoin(password: String, botName: String, botVersion: String) =
-        OutputPacket.Builder(PacketType.ADMIN_JOIN)
+        OutputPacket.Builder(OutputPacketType.ADMIN_JOIN)
             .writeString(password)
             .writeString(botName)
             .writeString(botVersion)
             .build()
 
     fun adminChat(action: ChatEvent.NetworkAction, type: ChatEvent.DestType, dest: Long, message: String, data: Long) =
-        OutputPacket.Builder(PacketType.ADMIN_CHAT)
+        OutputPacket.Builder(OutputPacketType.ADMIN_CHAT)
             .writeUint8(action.ordinal)
             .writeUint8(type.ordinal)
             .writeUint32(dest)
@@ -39,29 +39,29 @@ object OutputPacketService {
             .build()
 
     fun adminGameScript(json: String) =
-        OutputPacket.Builder(PacketType.ADMIN_GAMESCRIPT)
+        OutputPacket.Builder(OutputPacketType.ADMIN_GAMESCRIPT)
             .writeString(json)
             .build()
 
     fun adminPing(value: Long) =
-        OutputPacket.Builder(PacketType.ADMIN_PING)
+        OutputPacket.Builder(OutputPacketType.ADMIN_PING)
             .writeUint32(value)
             .build()
 
     fun adminPoll(type: ServerProtocol.AdminUpdateType, data: Long) =
-        OutputPacket.Builder(PacketType.ADMIN_POLL)
+        OutputPacket.Builder(OutputPacketType.ADMIN_POLL)
             .writeUint8(type.value)
             .writeUint32(data)
             .build()
 
-    fun adminQuit() = OutputPacket.Builder(PacketType.ADMIN_QUIT).build()
+    fun adminQuit() = OutputPacket.Builder(OutputPacketType.ADMIN_QUIT).build()
 
-    fun adminRcon(command: String) = OutputPacket.Builder(PacketType.ADMIN_RCON)
+    fun adminRcon(command: String) = OutputPacket.Builder(OutputPacketType.ADMIN_RCON)
         .writeString(command)
         .build()
 
     fun adminUpdateFrequency(type: ServerProtocol.AdminUpdateType, frequency: ServerProtocol.AdminUpdateFrequency) =
-        OutputPacket.Builder(PacketType.ADMIN_UPDATE_FREQUENCY)
+        OutputPacket.Builder(OutputPacketType.ADMIN_UPDATE_FREQUENCY)
             .writeUint16(type.value)
             .writeUint16(frequency.value)
             .build()

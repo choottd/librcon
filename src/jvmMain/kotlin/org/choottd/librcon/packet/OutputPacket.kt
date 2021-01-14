@@ -18,7 +18,6 @@
 package org.choottd.librcon.packet
 
 import java.math.BigInteger
-import java.util.*
 
 /**
  * Packets sent to the OpenTTD server
@@ -32,7 +31,7 @@ class OutputPacket private constructor(buffer: ByteArray) : Packet(buffer) {
         return "OutputPacket - ${buffer.size} bytes"
     }
 
-    internal class Builder(type: PacketType) {
+    internal class Builder(type: OutputPacketType) {
         private val buffer: ByteArray = ByteArray(SEND_MTU)
         private var position = POS_PACKET_TYPE + 1
 

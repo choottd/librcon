@@ -18,10 +18,10 @@
 package org.choottd.librcon.packet.data
 
 import org.choottd.librcon.packet.InputPacket
-import org.choottd.librcon.packet.PacketType
+import org.choottd.librcon.packet.InputPacketType
 import java.math.BigInteger
 
-sealed class ClientsPacketData(type: PacketType) : PacketData(type)
+sealed class ClientsPacketData(type: InputPacketType) : PacketData(type)
 
 class ServerClientJoin(packet: InputPacket) : ClientsPacketData(packet.type) {
     val clientId: Long = packet.readUint32()

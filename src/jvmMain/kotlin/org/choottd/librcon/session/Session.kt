@@ -28,10 +28,9 @@ import kotlinx.coroutines.launch
 import org.choottd.librcon.connection.ServerConnection
 import org.choottd.librcon.gamestate.GlobalState
 import org.choottd.librcon.packet.InputPacketService
-import org.choottd.librcon.packet.InvalidPacketException
+import org.choottd.librcon.packet.InputPacketType.*
 import org.choottd.librcon.packet.OutputPacket
 import org.choottd.librcon.packet.OutputPacketService
-import org.choottd.librcon.packet.PacketType.*
 import org.choottd.librcon.packet.data.ClientsPacketData
 import org.choottd.librcon.packet.data.CompaniesPacketData
 import org.choottd.librcon.packet.data.GameStatePacketData
@@ -98,22 +97,7 @@ class Session(
             logger.debug("[RECEIVED] {}", packetData)
 
             when (packetData.type) {
-                ADMIN_JOIN,
-                ADMIN_QUIT,
-                ADMIN_POLL,
-                ADMIN_CHAT,
-                ADMIN_RCON,
-                ADMIN_GAMESCRIPT,
-                ADMIN_UPDATE_FREQUENCY,
-                ADMIN_PING -> {
-                    logger.error("Unexpected packet of type ${packetData.type} received!")
-                    throw InvalidPacketException("Unexpected packet of type ${packetData.type}")
-                }
-
-                INVALID_ADMIN_PACKET -> {
-                    logger.error("Received INVALID_ADMIN_PACKET!")
-                    throw InvalidPacketException("Received INVALID_ADMIN_PACKET!")
-                }
+                INVALID_ADMIN_PACKET -> logger.error("Received INVALID_ADMIN_PACKET!")
 
                 SERVER_DATE,
                 SERVER_WELCOME -> gameStateHandler(packetData as GameStatePacketData)
