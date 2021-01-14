@@ -20,7 +20,7 @@ package org.choottd.librcon.packet
 abstract class Packet(protected val buffer: ByteArray) {
 
     companion object {
-        const val FF_MASK = 0xFF.toByte()
+        const val FF_MASK = 0xFF
         const val SEND_MTU = 1460
         const val POS_PACKET_TYPE = 2
     }

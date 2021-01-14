@@ -19,7 +19,6 @@ package org.choottd.librcon.packet
 
 import java.io.UnsupportedEncodingException
 import java.math.BigInteger
-import kotlin.experimental.and
 
 /**
  * Packet received from the OpenTTD server
@@ -27,40 +26,40 @@ import kotlin.experimental.and
 class InputPacket(buffer: ByteArray) : Packet(buffer) {
     private var position = POS_PACKET_TYPE + 1
 
-    val type: PacketType = PacketType.valueOf((buffer[POS_PACKET_TYPE] and FF_MASK).toInt())
+    val type: PacketType = PacketType.valueOf((buffer[POS_PACKET_TYPE].toInt() and FF_MASK))
 
     fun readBool(): Boolean {
-        return buffer[position++] and FF_MASK > 0
+        return buffer[position++].toInt() and FF_MASK > 0
     }
 
     fun readUint8(): Int {
-        return (buffer[position++] and FF_MASK).toInt()
+        return (buffer[position++].toInt() and FF_MASK)
     }
 
     fun readUint16(): Int {
-        var n = (buffer[position++] and FF_MASK).toInt()
-        n += (buffer[position++] and FF_MASK).toInt() shl 8
+        var n = (buffer[position++].toInt() and FF_MASK)
+        n += (buffer[position++].toInt() and FF_MASK) shl 8
         return n
     }
 
     fun readUint32(): Long {
-        var n: Long = (buffer[position++] and FF_MASK).toLong()
-        n += ((buffer[position++] and FF_MASK).toLong() shl 8)
-        n += ((buffer[position++] and FF_MASK).toLong() shl 16)
-        n += ((buffer[position++] and FF_MASK).toLong() shl 24)
+        var n: Long = (buffer[position++].toInt() and FF_MASK).toLong()
+        n += ((buffer[position++].toInt() and FF_MASK).toLong() shl 8)
+        n += ((buffer[position++].toInt() and FF_MASK).toLong() shl 16)
+        n += ((buffer[position++].toInt() and FF_MASK).toLong() shl 24)
         return n
     }
 
     fun readUint64(): BigInteger {
         var l: Long = 0
-        l += (buffer[position++] and FF_MASK).toLong()
-        l += (buffer[position++] and FF_MASK).toLong() shl 8
-        l += (buffer[position++] and FF_MASK).toLong() shl 16
-        l += (buffer[position++] and FF_MASK).toLong() shl 24
-        l += (buffer[position++] and FF_MASK).toLong() shl 32
-        l += (buffer[position++] and FF_MASK).toLong() shl 40
-        l += (buffer[position++] and FF_MASK).toLong() shl 48
-        l += (buffer[position++] and FF_MASK).toLong() shl 56
+        l += (buffer[position++].toInt() and FF_MASK).toLong()
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 8
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 16
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 24
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 32
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 40
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 48
+        l += (buffer[position++].toInt() and FF_MASK).toLong() shl 56
         return BigInteger.valueOf(l)
     }
 

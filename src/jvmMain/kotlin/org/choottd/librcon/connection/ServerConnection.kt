@@ -29,7 +29,6 @@ import java.nio.channels.CompletionHandler
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import kotlin.experimental.and
 
 class ServerConnection(
     private val host: String,
@@ -83,15 +82,15 @@ class ServerConnection(
 
     private suspend fun readToBuffer(buffer: ByteArray) = suspendCoroutine<ByteArray> { cont ->
         val byteBuffer = ByteBuffer.wrap(buffer)
-        socketChannel.read(byteBuffer, Unit, object: CompletionHandler<Int, Unit> {
+        socketChannel.read(byteBuffer, Unit, object : CompletionHandler<Int, Unit> {
             override fun completed(result: Int?, attachment: Unit?) = cont.resume(byteBuffer.array())
             override fun failed(exc: Throwable, attachment: Unit?) = cont.resumeWithException(exc)
         })
     }
 
     private fun readLength(buffer: ByteArray): Int {
-        val b1: Int = (buffer[0] and Packet.FF_MASK).toInt()
-        val b2: Int = (buffer[1] and Packet.FF_MASK).toInt()
+        val b1: Int = (buffer[0].toInt() and Packet.FF_MASK).toInt()
+        val b2: Int = (buffer[1].toInt() and Packet.FF_MASK).toInt()
         return b1 + (b2 shl 8)
     }
 
