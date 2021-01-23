@@ -35,6 +35,7 @@ class ServerConnection(
     private val port: Int
 ) : Closeable {
 
+    private var connectionOpened = false
     private val socketChannel = AsynchronousSocketChannel.open()
         .setOption(StandardSocketOptions.TCP_NODELAY, true)
         .setOption(StandardSocketOptions.SO_KEEPALIVE, false)
@@ -43,6 +44,10 @@ class ServerConnection(
         get() = socketChannel.isOpen
 
     suspend fun open(): Unit = suspendCoroutine { cont ->
+        if (connectionOpened) {
+            return@suspendCoroutine
+        }
+        connectionOpened = true
         socketChannel.connect(InetSocketAddress(host, port), Unit,
             object : CompletionHandler<Void, Unit> {
                 override fun completed(result: Void?, attachment: Unit) = cont.resume(Unit)

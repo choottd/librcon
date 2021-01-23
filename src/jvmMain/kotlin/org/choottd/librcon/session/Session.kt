@@ -39,6 +39,7 @@ import org.choottd.librcon.session.event.SessionClosedEvent
 import org.choottd.librcon.session.event.SessionEvent
 import org.choottd.librcon.session.event.data.GlobalStateData
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 
 @Suppress("unused")
@@ -92,7 +93,12 @@ class Session(
 
     private fun inputPacketHandler() = launch {
         while (true) {
-            val inputPacket = connection.readPacket()
+            val inputPacket = try {
+                connection.readPacket()
+            } catch (ex: IOException) {
+                logger.warn("Socket read failed", ex)
+                continue
+            }
             val packetData = InputPacketService.parseData(inputPacket)
             logger.debug("[RECEIVED] {}", packetData)
 
