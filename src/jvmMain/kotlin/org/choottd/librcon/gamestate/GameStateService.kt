@@ -17,7 +17,7 @@
 
 package org.choottd.librcon.gamestate
 
-import java.util.*
+import java.time.LocalDate
 import kotlin.math.floor
 
 object GameStateService {
@@ -41,13 +41,12 @@ object GameStateService {
 
         val day = ++rem
 
-        val cal = Calendar.getInstance()
-        cal[Calendar.YEAR] = year
-        cal[Calendar.DAY_OF_YEAR] = day
-        return GameDate(year, cal[Calendar.MONTH] + 1, cal[Calendar.DAY_OF_MONTH])
+
+        val wrapper = LocalDate.ofYearDay(year, day)
+        return GameDate(wrapper.year, wrapper.monthValue, wrapper.dayOfMonth)
     }
 
-    fun isLeapYear(year: Double): Boolean {
+    private fun isLeapYear(year: Double): Boolean {
         return year % 4 == 0.0 && (year % 100 != 0.0 || year % 400 == 0.0)
     }
 }
