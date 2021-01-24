@@ -37,7 +37,6 @@ import org.choottd.librcon.packet.data.GameStatePacketData
 import org.choottd.librcon.packet.data.OperationsPacketData
 import org.choottd.librcon.session.event.SessionClosedEvent
 import org.choottd.librcon.session.event.SessionEvent
-import org.choottd.librcon.session.event.data.GlobalStateData
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
@@ -57,7 +56,6 @@ class Session(
     private val outputChannel = Channel<OutputPacket>(Channel.UNLIMITED)
 
     internal val globalState = GlobalState()
-    val latestServerData: GlobalStateData get() = GlobalStateData.from(globalState)
 
     private val _sessionEvents = MutableSharedFlow<SessionEvent>()
     val sessionEvents: SharedFlow<SessionEvent>
