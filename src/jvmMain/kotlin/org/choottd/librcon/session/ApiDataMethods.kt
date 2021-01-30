@@ -22,6 +22,8 @@ package org.choottd.librcon.session
 import kotlinx.coroutines.launch
 import org.choottd.librcon.packet.OutputPacketService
 import org.choottd.librcon.packet.data.ServerProtocol
+import org.choottd.librcon.session.event.GameUpdateEvent
+import org.choottd.librcon.session.event.data.GameData
 
 fun Session.fetchAllData() = launch {
     fetchCommands()
@@ -48,6 +50,19 @@ fun Session.fetchCompaniesStats() = sendAdminPoll(ServerProtocol.AdminUpdateType
 fun Session.fetchCommands() = sendAdminPoll(ServerProtocol.AdminUpdateType.CMD_NAMES)
 
 fun Session.fetchGameDate() = sendAdminPoll(ServerProtocol.AdminUpdateType.DATE)
+
+fun Session.fetchGameInfo() = launch {
+    when (state) {
+        Session.State.WELCOME_RECEIVED -> if (globalState.gameState != null) {
+            sendEvent(GameUpdateEvent(GameData.from(globalState.gameState!!)))
+        }
+
+        else -> {
+            Session.logger.warn("Session in invalid state $state")
+        }
+    }
+
+}
 
 fun Session.sendAdminRcon(command: String) = launch {
     val packet = OutputPacketService.adminRcon(command)
