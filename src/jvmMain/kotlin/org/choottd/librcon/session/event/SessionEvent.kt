@@ -17,9 +17,8 @@
 
 package org.choottd.librcon.session.event
 
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.Instant
 
 abstract class SessionEvent {
-    val timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
+    val timestamp = Instant.now().epochSecond
 }

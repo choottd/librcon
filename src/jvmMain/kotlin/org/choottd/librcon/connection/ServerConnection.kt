@@ -94,8 +94,8 @@ class ServerConnection(
     }
 
     private fun readLength(buffer: ByteArray): Int {
-        val b1: Int = (buffer[0].toInt() and Packet.FF_MASK).toInt()
-        val b2: Int = (buffer[1].toInt() and Packet.FF_MASK).toInt()
+        val b1: Int = (buffer[0].toInt() and Packet.FF_MASK)
+        val b2: Int = (buffer[1].toInt() and Packet.FF_MASK)
         return b1 + (b2 shl 8)
     }
 
